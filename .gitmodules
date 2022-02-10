@@ -1,0 +1,7 @@
+
+[submodule "modules/CTCDecoder"]
+	path = modules/CTCDecoder
+	url = https://github.com/githubharald/CTCDecoder
+[submodule "modules/CTCWordBeamSearch"]
+	path = modules/CTCWordBeamSearch
+	url = https://github.com/githubharald/CTCWordBeamSearch.git

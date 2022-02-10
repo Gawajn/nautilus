@@ -1,0 +1,10 @@
+torch
+ctc_decoder
+pandas
+nltk
+pyyaml
+symspellpy
+torchvision
+natsort
+pillow
+dataclasses_json

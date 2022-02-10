@@ -105,15 +105,15 @@ class DictionaryCorrector(SymSpell):
         sentence = self.word_segmentation(text, edit_distance)
         return sentence
 
-    def load_dict(self, name):
+    def load_dict(self, path_default_dict, path_bigram_dict):
 
-        path = "default_dictionary.json"
+        path = path_default_dict #"default_dictionary.json"
         with open(path) as f:
             d = DatabaseDictionary.from_json(json.load(f))
         for entry in d.dictionary.freq_list:
             print(entry)
             self.create_dictionary_entry(entry.word, entry.frequency)
-        path = 'bigram_default_dictionary.txt'
+        path = path_bigram_dict#'bigram_default_dictionary.txt'
         loaded = self.load_bigram_dictionary(path, 0, 2)
         print(loaded)
         pass

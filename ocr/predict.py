@@ -125,7 +125,7 @@ class Modelenum:
     network = None
 
     def load_network(self):
-        path = os.path.join('text_language_model.json')
+        path = os.path.join('../data/text_language_model.json')
         text = ''
         with open(path, 'r') as file:
             text = file.read().replace('\n', '')
@@ -184,15 +184,15 @@ if __name__ == "__main__":
 
     models = models[-1:]
     dc = DictionaryCorrector()
-    dc.load_dict("abc")
+    dc.load_dict("../data/default_dictionary.json", "../data/bigram_default_dictionary.txt")
 
     for image in glob.glob("/tmp/images/*png"):
         for model in models:
             print(image)
             print(model.ident_suffix)
             pred = model.predict(image)
-            pred2 = dc.segmentate_correct_and_hyphenate_text(pred[0].decoded_string)
+            pred2 = dc.segmentate_correct_text(pred.decoded_string)
             print([pred2])
             with open(image.replace(".png", model.ident_suffix + ".txt"), "w") as file:
-                file.write(pred[0].decoded_string)
+                file.write(pred.decoded_string)
     pass

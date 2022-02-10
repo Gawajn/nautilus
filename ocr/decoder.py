@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from itertools import groupby
+from typing import List
 
 import numpy as np
 from word_beam_search import WordBeamSearch
@@ -45,10 +46,11 @@ class GreedyDecoder(Decoder):
         super().__init__(chars)
 
     def decode(self, mat, extendend_info=False):
-        index_list = np.argmax(mat, axis=1)
+        index_list = np.argmax(np.squeeze(mat), axis=1)
         blank_index = len(self.chars)
         best_chars_collapsed = [self.chars[k] for k, _ in groupby(index_list) if k != blank_index]
         pred_string = ''.join(best_chars_collapsed)
+
         extendend_info_stats = None
         if extendend_info:
             listextf = []

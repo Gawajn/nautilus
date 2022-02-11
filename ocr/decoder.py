@@ -1,3 +1,4 @@
+import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from itertools import groupby
@@ -9,6 +10,13 @@ from word_beam_search import WordBeamSearch
 from modules.CTCDecoder.ctc_decoder.beam_search import beam_search
 from modules.CTCDecoder.ctc_decoder.bk_tree import BKTree
 from modules.CTCDecoder.ctc_decoder.language_model import LanguageModel
+
+
+class DecoderType(str, enum.Enum):
+    greedy_decoder: str = "greedy"
+    beam_search_decoder: str = "beam_search"
+    word_beam_search_decoder: str = "word_beam_search"
+    lexicon_search_decoder: str = "lexicon_search"
 
 
 @dataclass
@@ -73,7 +81,6 @@ class GreedyDecoder(Decoder):
                                                        blank_index=blank_index,
                                                        charLocationInfo=listextf)
 
-        print(f'Best path: "{pred_string}"')
         return DecoderOutput(decoded_string=pred_string, char_mapping=extendend_info_stats)
 
 
@@ -86,7 +93,6 @@ class BeamSearchDecoder(Decoder):
 
     def decode(self, mat):
         pred_string = beam_search(np.squeeze(mat), self.chars, beam_width=self.beam_width, lm=self.lm)
-        print(f'Beam search: {pred_string}')
         return DecoderOutput(pred_string)
 
 

@@ -15,7 +15,7 @@ import yaml
 import numpy as np
 from word_beam_search import WordBeamSearch
 
-from ocr.decoder import WordBeamSearchDecoder, GreedyDecoder, BeamSearchDecoder
+from ocr.decoder import WordBeamSearchDecoder, GreedyDecoder, BeamSearchDecoder, DecoderType
 from ocr.word_dictionary import CharReplacementEngine, DictionaryCorrector
 from utils import CTCLabelConverter, AttnLabelConverter, Averager, AttrDict
 from model import Model
@@ -64,8 +64,11 @@ class Network:
         self.chars = chars
         self.corpus = corpus
         self.beam_width = 25
+        self.grd_decoder = None
+        self.bsd_decoder = None
+        self.wbsd_decoder = None
 
-    def predict_single_image(self, img_path):
+    def predict_single_image(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
         from PIL import Image
         import torchvision.transforms as transforms
         # length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
@@ -81,16 +84,28 @@ class Network:
         output = output.permute(1, 0, 2)
         output = output.detach().cpu().numpy()
         d = np.dstack((output[:, :, 1:], output[:, :, 0]))
-        grd = GreedyDecoder(self.chars)
-        bsd = BeamSearchDecoder(self.chars, self.beam_width, self.corpus)
-        wbsd = WordBeamSearchDecoder(self.chars, self.beam_width, self.corpus)
-        grd_pred = grd.decode(d)
-        bsd_pred = bsd.decode(d)
-        wbsd = wbsd.decode(d)
-        print(grd_pred.decoded_string)
-        print(bsd_pred.decoded_string)
-        print(wbsd.decoded_string)
-        return grd_pred
+        pred_str = ""
+        if decoder_type == DecoderType.greedy_decoder:
+            if self.grd_decoder is None:
+                self.grd_decoder = GreedyDecoder(self.chars)
+            pred_str = self.grd_decoder.decode(d)
+            if verbose:
+                print(f'GreedyDecoder:{pred_str.decoded_string}')
+        elif decoder_type == DecoderType.beam_search_decoder:
+            if self.bsd_decoder is None:
+                self.bsd_decoder = BeamSearchDecoder(self.chars, self.beam_width, self.corpus)
+            pred_str = self.bsd_decoder.decode(d)
+            if verbose:
+                print(f'BeamSearchDecoder: {pred_str.decoded_string}')
+        elif decoder_type == DecoderType.word_beam_search_decoder:
+            if self.wbsd_decoder is None:
+                self.wbsd_decoder = WordBeamSearchDecoder(self.chars, self.beam_width, self.corpus)
+            pred_str = self.wbsd_decoder.decode(d)
+            if verbose:
+                print(f'WordBeamSearchDecoder: {pred_str.decoded_string}')
+        else:
+            raise NotImplemented
+        return pred_str
 
 
 def get_config(file_path, char=None):
@@ -135,10 +150,10 @@ class Modelenum:
             self.char = opt['character']
         self.network = Network(opt, self.m_path, self.char, corpus=text)
 
-    def predict(self, image):
+    def predict(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder):
         if self.network is None:
             self.load_network()
-        pred = self.network.predict_single_image(image)
+        pred = self.network.predict_single_image(image, decoder_type)
         return pred
 
 
@@ -185,14 +200,27 @@ if __name__ == "__main__":
     models = models[-1:]
     dc = DictionaryCorrector()
     dc.load_dict("../data/default_dictionary.json", "../data/bigram_default_dictionary.txt")
-
+    chr = CharReplacementEngine()
     for image in glob.glob("/tmp/images/*png"):
         for model in models:
-            print(image)
-            print(model.ident_suffix)
-            pred = model.predict(image)
-            pred2 = dc.segmentate_correct_text(pred.decoded_string)
-            print([pred2])
-            with open(image.replace(".png", model.ident_suffix + ".txt"), "w") as file:
-                file.write(pred.decoded_string)
+            for i in [DecoderType.greedy_decoder, DecoderType.beam_search_decoder, DecoderType.word_beam_search_decoder]:
+                print(image)
+                print(model.ident_suffix)
+                pred = model.predict(image, DecoderType(i))
+                type = "_"+ i +"_"
+                with open(image.replace(".png", "_unprocessed_" + type + model.ident_suffix + ".txt"), "w") as file:
+                    file.write(pred.decoded_string)
+                pred = chr.replace(pred.decoded_string)
+                print(f'Normalisiert: {pred}')
+                with open(image.replace(".png", "_normalized_" + type + model.ident_suffix + ".txt"), "w") as file:
+                    file.write(pred)
+                pred = dc.segmentate_correct_text(pred)
+                print(f'Segmentiert: {pred.segmented_string}')
+                with open(image.replace(".png", "_segmented_" + type + model.ident_suffix + ".txt"), "w") as file:
+                    file.write(pred.segmented_string)
+                print(f'Dictionary: {pred.corrected_string}')
+
+                with open(image.replace(".png", "_dictionary_" + type + model.ident_suffix + ".txt"), "w") as file:
+                    file.write(pred.corrected_string)
+                print("\n")
     pass

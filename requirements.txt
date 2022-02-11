@@ -8,3 +8,4 @@ torchvision
 natsort
 pillow
 dataclasses_json
+edit_distance

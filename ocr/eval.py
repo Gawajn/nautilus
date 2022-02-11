@@ -276,10 +276,19 @@ EvaluationResultMultiModelSummary = namedtuple("EvaluationResultMultiModelSummar
 if __name__ == "__main__":
     res = []
     model = []
-    suffix = ".pred.txt"
-    suffix_list = [".pred.txt", "_model1.txt", "_model2.txt", "_model3.txt", "_model4.txt", "_model5.txt",
+    calamari_suffix = ".pred.txt"
+    suffix_list = ["_model1.txt", "_model2.txt", "_model3.txt", "_model4.txt", "_model5.txt",
                    "_model6.txt", "_model7.txt", "_model8.txt", "_model9.txt"]
-    for suffix in suffix_list:
+    suffix_list_extended = []
+    for x in suffix_list:
+        for y in ["_dictionary_", "_unprocessed_", "_normalized_", "_segmented_"]:
+            for z in ["_greedy_", "_word_beam_search_", "_beam_search_"]:
+                print(x)
+                suffix_list_extended.append(y+z+x)
+
+    suffix_list_extended.append(calamari_suffix)
+    print(suffix_list_extended)
+    for suffix in suffix_list_extended:
         print(suffix)
         gt_lines = []
         pred_lines = []

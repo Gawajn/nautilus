@@ -15,8 +15,8 @@ import yaml
 import numpy as np
 from word_beam_search import WordBeamSearch
 
-from ocr.decoder import WordBeamSearchDecoder, GreedyDecoder, BeamSearchDecoder, DecoderType
-from ocr.word_dictionary import CharReplacementEngine, DictionaryCorrector
+from nautilus_ocr.decoder import WordBeamSearchDecoder, GreedyDecoder, BeamSearchDecoder, DecoderType
+from nautilus_ocr.word_dictionary import CharReplacementEngine, DictionaryCorrector
 from utils import CTCLabelConverter, AttnLabelConverter, Averager, AttrDict
 from model import Model
 

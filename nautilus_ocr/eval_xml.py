@@ -2,8 +2,8 @@ import glob
 from collections import defaultdict
 from random import shuffle
 
-from ocr.eval import TextLinesOCREvaluation, TextLine, WordDictEvaluator
-from ocr.word_dictionary import DictionaryCorrector
+from nautilus_ocr.eval import TextLinesOCREvaluation, TextLine, WordDictEvaluator
+from nautilus_ocr.word_dictionary import DictionaryCorrector
 
 if __name__ == "__main__":
     dc = DictionaryCorrector()

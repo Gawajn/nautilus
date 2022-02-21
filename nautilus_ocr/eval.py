@@ -7,7 +7,7 @@ import pandas as pd
 from edit_distance import edit_distance, SequenceMatcher
 import numpy as np
 
-from ocr.word_dictionary import DictionaryCorrector
+from nautilus_ocr.word_dictionary import DictionaryCorrector
 
 
 class Sync:

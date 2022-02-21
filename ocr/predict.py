@@ -202,6 +202,8 @@ if __name__ == "__main__":
     dc.load_dict("../data/default_dictionary.json", "../data/bigram_default_dictionary.txt")
     chr = CharReplacementEngine()
     for image in glob.glob("/tmp/images/*png"):
+    #for image in glob.glob("/home/alexanderh/Downloads/lyrics/errors/*png"):
+
         for model in models:
             for i in [DecoderType.greedy_decoder, DecoderType.beam_search_decoder, DecoderType.word_beam_search_decoder]:
                 print(image)

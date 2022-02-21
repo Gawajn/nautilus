@@ -20,6 +20,7 @@ class CharReplacementEngine:
             replacement_string = replacement_string.replace(x, self.ruleSetDict[x])
         return replacement_string
 
+
 import json
 import os
 from datetime import datetime
@@ -28,7 +29,6 @@ from typing import List
 from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
-
 
 
 @dataclass_json
@@ -44,17 +44,15 @@ class WordFrequency:
 class WordFrequencyDict:
     freq_list: List[WordFrequency]
 
-    #def get_n_most_similar_words(self, word, n=5):
+    # def get_n_most_similar_words(self, word, n=5):
     #    probs = {}
-     #   total = sum([x.frequency for x in self.freq_list])
-     #   for k in self.freq_list:
-     #       probs[k.word] = k.frequency / total
-     #   if word in probs:
-     #       return "yay"
-     #   else:
-     #       similarities = [1 - (textdistance.Jaccard(qval=2).distance(v, input_word)) for v in word_freq_dict.keys()]
-
-
+    #   total = sum([x.frequency for x in self.freq_list])
+    #   for k in self.freq_list:
+    #       probs[k.word] = k.frequency / total
+    #   if word in probs:
+    #       return "yay"
+    #   else:
+    #       similarities = [1 - (textdistance.Jaccard(qval=2).distance(v, input_word)) for v in word_freq_dict.keys()]
 
 
 class DatabaseDictionary:
@@ -90,32 +88,41 @@ class DatabaseDictionary:
             "created": self.created.isoformat(),
             "dictionary": self.dictionary.to_dict() if self.dictionary else []
         }
+
     def to_frequent_list(self):
         pass
+
 
 class DictionaryCorrector(SymSpell):
     def __init__(self, max_dictionary_edit_distance=2, prefix_length=7,
                  count_threshold=1):
         super().__init__(max_dictionary_edit_distance=max_dictionary_edit_distance, prefix_length=prefix_length,
                          count_threshold=count_threshold)
-        #self.sym_spell = SymSpell()
+        # self.sym_spell = SymSpell()
         self.book_id = None
+        self.word_list = []
 
     def segmentate_correct_text(self, text, edit_distance=2):
-        sentence = self.word_segmentation(text, edit_distance)
+        if len(text) == 0:
+            @dataclass
+            class Res():
+                segmented_string: str
+                corrected_string: str
+
+            return Res(segmented_string=text, corrected_string=text)
+        sentence = self.word_segmentation(text.replace(" "), edit_distance)
         return sentence
 
     def load_dict(self, path_default_dict, path_bigram_dict):
 
-        path = path_default_dict #"default_dictionary.json"
+        path = path_default_dict  # "default_dictionary.json"
         with open(path) as f:
             d = DatabaseDictionary.from_json(json.load(f))
         for entry in d.dictionary.freq_list:
             print(entry)
+            self.word_list.append(entry.word)
             self.create_dictionary_entry(entry.word, entry.frequency)
-        path = path_bigram_dict#'bigram_default_dictionary.txt'
+        path = path_bigram_dict  # 'bigram_default_dictionary.txt'
         loaded = self.load_bigram_dictionary(path, 0, 2)
         print(loaded)
         pass
-
-

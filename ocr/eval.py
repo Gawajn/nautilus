@@ -4,8 +4,10 @@ from dataclasses import dataclass
 from typing import List
 
 import pandas as pd
-from edit_distance import edit_distance
+from edit_distance import edit_distance, SequenceMatcher
 import numpy as np
+
+from ocr.word_dictionary import DictionaryCorrector
 
 
 class Sync:
@@ -145,7 +147,29 @@ def synchronize(texts):
 
 
 CERResult = namedtuple("CERResult", "n errs sync_errors confusion gt pred")
+class WordDictEvaluator:
+    @staticmethod
+    def evaluate(pred: str, gt: str, skip_empty_gt: bool = False) -> CERResult:
 
+        def sync_words(pred, gt, seperator=" "):
+            p_words = pred.split(seperator)
+            gt_words = gt.split(seperator)
+            opt_codes = list(SequenceMatcher(p_words, gt_words).get_opcodes())
+            synced_word_list = []
+            for i in opt_codes:
+                if i[0] == "equal" or i[0] == "replace":
+                    synced_word_list.append((p_words[i[1]: i[2]], gt_words[i[3]: i[4]]))
+            #print(synced_word_list)
+            #print(p_words)
+            #print(list(SequenceMatcher(p_words, gt_words).get_matching_blocks()))
+            #print(list(SequenceMatcher(p_words, gt_words).get_opcodes()))
+
+            #print(edit_distance(p_words, gt_words))
+
+            return synced_word_list
+
+        synced_word_list = sync_words(pred, gt)
+        return synced_word_list
 
 class CEREvaluator:
     @staticmethod
@@ -274,6 +298,11 @@ class TextLinesOCREvaluation():
 EvaluationResultMultiModelSummary = namedtuple("EvaluationResultMultiModelSummary", "n error syncerror")
 
 if __name__ == "__main__":
+
+    a = "test test test"
+    b = "test terst test"
+    WordDictEvaluator().evaluate(a, b)
+
     res = []
     model = []
     calamari_suffix = ".pred.txt"

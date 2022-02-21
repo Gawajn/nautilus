@@ -5,11 +5,11 @@ from itertools import groupby
 from typing import List
 
 import numpy as np
+from ctc_decoder import beam_search
 from word_beam_search import WordBeamSearch
 
-from modules.CTCDecoder.ctc_decoder.beam_search import beam_search
-from modules.CTCDecoder.ctc_decoder.bk_tree import BKTree
-from modules.CTCDecoder.ctc_decoder.language_model import LanguageModel
+from ctc_decoder.bk_tree import BKTree
+from ctc_decoder.language_model import LanguageModel
 
 
 class DecoderType(str, enum.Enum):

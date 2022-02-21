@@ -17,8 +17,8 @@ from word_beam_search import WordBeamSearch
 
 from nautilus_ocr.decoder import WordBeamSearchDecoder, GreedyDecoder, BeamSearchDecoder, DecoderType
 from nautilus_ocr.word_dictionary import CharReplacementEngine, DictionaryCorrector
-from utils import CTCLabelConverter, AttnLabelConverter, Averager, AttrDict
-from model import Model
+from nautilus_ocr.utils import CTCLabelConverter, AttnLabelConverter, Averager, AttrDict
+from nautilus_ocr.model import Model
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

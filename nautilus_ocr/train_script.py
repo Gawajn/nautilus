@@ -1,8 +1,8 @@
 import os
 import torch.backends.cudnn as cudnn
 import yaml
-from train import train
-from utils import AttrDict
+from nautilus_ocr.train import train
+from nautilus_ocr.utils import AttrDict
 import pandas as pd
 
 cudnn.benchmark = True

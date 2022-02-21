@@ -69,13 +69,14 @@ class Network:
         self.wbsd_decoder = None
     def predict_single_image_by_path(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
         from PIL import Image
-        import torchvision.transforms as transforms
         # length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
-        self.toTensor = transforms.ToTensor()
         image = Image.open(img_path).convert('L')
         return self.predict_single_image(image, decoder_type, verbose)
 
     def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
+        import torchvision.transforms as transforms
+        self.toTensor = transforms.ToTensor()
+
         img = self.toTensor(image)
         img.sub_(0.5).div_(0.5)
         img = img.unsqueeze(0)

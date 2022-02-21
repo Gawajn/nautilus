@@ -67,13 +67,15 @@ class Network:
         self.grd_decoder = None
         self.bsd_decoder = None
         self.wbsd_decoder = None
-
-    def predict_single_image(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
+    def predict_single_image_by_path(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
         from PIL import Image
         import torchvision.transforms as transforms
         # length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
         self.toTensor = transforms.ToTensor()
         image = Image.open(img_path).convert('L')
+        return self.predict_single_image(image, decoder_type, verbose)
+
+    def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
         img = self.toTensor(image)
         img.sub_(0.5).div_(0.5)
         img = img.unsqueeze(0)
@@ -153,7 +155,7 @@ class Modelenum:
     def predict(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder):
         if self.network is None:
             self.load_network()
-        pred = self.network.predict_single_image(image, decoder_type)
+        pred = self.network.predict_single_image_by_path(image, decoder_type)
         return pred
 
 

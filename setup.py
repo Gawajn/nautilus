@@ -4,7 +4,7 @@ from pathlib import Path
 from setuptools import setup, find_packages
 
 setup(
-    name="calamari_ocr",
+    name="nautilus_ocr",
     version='0.1',
     packages=find_packages(),
     license="Apache License 2.0",

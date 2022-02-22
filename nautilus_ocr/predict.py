@@ -70,10 +70,15 @@ class Network:
     def predict_single_image_by_path(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
         from PIL import Image
         # length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
+
         image = Image.open(img_path).convert('L')
+        print(image)
+        print(np.array(image))
+        print(np.array(image).shape)
+
         return self.predict_single_image(image, decoder_type, verbose)
 
-    def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
+    def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True, extended_info=True):
         import torchvision.transforms as transforms
         self.toTensor = transforms.ToTensor()
 
@@ -91,7 +96,7 @@ class Network:
         if decoder_type == DecoderType.greedy_decoder:
             if self.grd_decoder is None:
                 self.grd_decoder = GreedyDecoder(self.chars)
-            pred_str = self.grd_decoder.decode(d)
+            pred_str = self.grd_decoder.decode(d, extended_info)
             if verbose:
                 print(f'GreedyDecoder:{pred_str.decoded_string}')
         elif decoder_type == DecoderType.beam_search_decoder:
@@ -204,8 +209,8 @@ if __name__ == "__main__":
     dc = DictionaryCorrector()
     dc.load_dict("../data/default_dictionary.json", "../data/bigram_default_dictionary.txt")
     chr = CharReplacementEngine()
-    for image in glob.glob("/tmp/images/*png"):
-    #for image in glob.glob("/home/alexanderh/Downloads/lyrics/errors/*png"):
+    #for image in glob.glob("/tmp/images/*png"):
+    for image in glob.glob("/home/alexanderh/Downloads/lyrics/errors/*png"):
 
         for model in models:
             for i in [DecoderType.greedy_decoder, DecoderType.beam_search_decoder, DecoderType.word_beam_search_decoder]:

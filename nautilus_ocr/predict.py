@@ -56,7 +56,7 @@ class Network:
               opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
               opt.SequenceModeling, opt.Prediction)
         model = torch.nn.DataParallel(model).to(device)
-        pretrained_dict = torch.load(model_path)
+        pretrained_dict = torch.load(model_path, map_location=device)
         model.load_state_dict(pretrained_dict)
         self.model = model.to(device)
         self.batch_max_length = opt.batch_max_length

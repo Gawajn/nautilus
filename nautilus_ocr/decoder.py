@@ -32,6 +32,7 @@ class ExtendedDecoderInfo:
     white_space_index: int
     blank_index: int
     charLocationInfo: List[CharLocationInfo]
+    probability_map: np.array = None
 
 
 @dataclass
@@ -58,7 +59,6 @@ class GreedyDecoder(Decoder):
         blank_index = len(self.chars)
         best_chars_collapsed = [self.chars[k] for k, _ in groupby(index_list) if k != blank_index]
         pred_string = ''.join(best_chars_collapsed)
-
         extendend_info_stats = None
         if extendend_info:
             listextf = []
@@ -79,7 +79,9 @@ class GreedyDecoder(Decoder):
             extendend_info_stats = ExtendedDecoderInfo(chars=self.chars,
                                                        white_space_index=whitespace_char_index,
                                                        blank_index=blank_index,
-                                                       charLocationInfo=listextf)
+                                                       charLocationInfo=listextf,
+                                                       probability_map=mat
+            )
 
         return DecoderOutput(decoded_string=pred_string, char_mapping=extendend_info_stats)
 

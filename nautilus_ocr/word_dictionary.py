@@ -110,7 +110,7 @@ class DictionaryCorrector(SymSpell):
                 corrected_string: str
 
             return Res(segmented_string=text, corrected_string=text)
-        sentence = self.word_segmentation(text.replace(" "), edit_distance)
+        sentence = self.word_segmentation(text.replace(" ", ""), edit_distance)
         return sentence
 
     def load_dict(self, path_default_dict, path_bigram_dict):

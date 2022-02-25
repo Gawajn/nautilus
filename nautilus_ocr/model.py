@@ -18,7 +18,6 @@ class Model(nn.Module):
                 F=opt.num_fiducial, I_size=(opt.imgH, opt.imgW), I_r_size=(opt.imgH, opt.imgW), I_channel_num=opt.input_channel)
         else:
             print('No Transformation module specified')
-
         """ FeatureExtraction """
         if opt.FeatureExtraction == 'VGG':
             self.FeatureExtraction = VGG_FeatureExtractor(opt.input_channel, opt.output_channel)
@@ -56,7 +55,9 @@ class Model(nn.Module):
 
         """ Feature extraction stage """
         visual_feature = self.FeatureExtraction(input)
+
         visual_feature = self.AdaptiveAvgPool(visual_feature.permute(0, 3, 1, 2))  # [b, c, h, w] -> [b, w, c, h]
+
         visual_feature = visual_feature.squeeze(3)
 
         """ Sequence modeling stage """

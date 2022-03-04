@@ -1,6 +1,7 @@
 import torch.nn as nn
 from nautilus_ocr.modules.transformation import TPS_SpatialTransformerNetwork
-from nautilus_ocr.modules.feature_extraction import VGG_FeatureExtractor, RCNN_FeatureExtractor, ResNet_FeatureExtractor
+from nautilus_ocr.modules.feature_extraction import VGG_FeatureExtractor, RCNN_FeatureExtractor, \
+    ResNet_FeatureExtractor, VGG_FeatureExtractorSymbol
 from nautilus_ocr.modules.sequence_modeling import BidirectionalLSTM
 from nautilus_ocr.modules.prediction import Attention
 
@@ -25,6 +26,9 @@ class Model(nn.Module):
             self.FeatureExtraction = RCNN_FeatureExtractor(opt.input_channel, opt.output_channel)
         elif opt.FeatureExtraction == 'ResNet':
             self.FeatureExtraction = ResNet_FeatureExtractor(opt.input_channel, opt.output_channel)
+        elif opt.FeatureExtraction == 'Custom':
+            self.FeatureExtraction = VGG_FeatureExtractorSymbol(opt.input_channel, opt.output_channel)
+
         else:
             raise Exception('No FeatureExtraction module specified')
         self.FeatureExtraction_output = opt.output_channel  # int(imgH/16-1) * 512

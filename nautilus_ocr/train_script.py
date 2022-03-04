@@ -26,5 +26,5 @@ def get_config(file_path):
     os.makedirs(f'./saved_models/{opt.experiment_name}', exist_ok=True)
     return opt
 
-opt = get_config("config_files/en_filtered_config_post.yaml")
+opt = get_config("config_files/s2sq.yaml")
 train(opt, amp=False)

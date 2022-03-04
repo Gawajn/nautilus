@@ -122,7 +122,6 @@ def hierarchical_dataset(root, opt, select_data='/'):
     """ select_data='/' contains all sub-directory of root directory """
     dataset_list = []
     dataset_log = f'dataset_root:    {root}\t dataset: {select_data[0]}'
-    print(dataset_log)
     dataset_log += '\n'
     for dirpath, dirnames, filenames in os.walk(root + '/'):
         if not dirnames:
@@ -131,11 +130,9 @@ def hierarchical_dataset(root, opt, select_data='/'):
                 if selected_d in dirpath:
                     select_flag = True
                     break
-
             if select_flag:
                 dataset = OCRDataset(dirpath, opt)
                 sub_dataset_log = f'sub-directory:\t/{os.path.relpath(dirpath, root)}\t num samples: {len(dataset)}'
-                print(sub_dataset_log)
                 dataset_log += f'{sub_dataset_log}\n'
                 dataset_list.append(dataset)
 
@@ -150,13 +147,11 @@ class OCRDataset(Dataset):
 
         self.root = root
         self.opt = opt
-        print(root)
         self.df = pd.read_csv(os.path.join(root, 'labels.csv'), sep='^([^,]+),', engine='python',
                               usecols=['filename', 'words'], keep_default_na=False)
         self.nSamples = len(self.df)
-
         if self.opt.data_filtering_off:
-            self.filtered_index_list = [index + 1 for index in range(self.nSamples)]
+            self.filtered_index_list = [index for index in range(self.nSamples)]
         else:
             self.filtered_index_list = []
             for index in range(self.nSamples):
@@ -202,7 +197,6 @@ class PredDataset(Dataset):
 
         self.root = root
         self.opt = opt
-        print(root)
         self.df = pd.read_csv(os.path.join(root, 'labels.csv'), sep='^([^,]+),', engine='python',
                               usecols=['filename', 'words'], keep_default_na=False)
         self.nSamples = len(self.df)

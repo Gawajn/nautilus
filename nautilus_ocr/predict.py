@@ -36,8 +36,6 @@ def count_parameters(model):
     return total_params
 
 
-
-
 class Network:
     def __init__(self, opt, model_path, chars, corpus=''):
         """ model configuration """
@@ -68,14 +66,16 @@ class Network:
         self.bsd_decoder = None
         self.wbsd_decoder = None
 
-    def predict_single_image_by_path(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True):
+    def predict_single_image_by_path(self, img_path, decoder_type: DecoderType = DecoderType.greedy_decoder,
+                                     verbose=True):
         from PIL import Image
         # length_for_pred = torch.IntTensor([opt.batch_max_length] * batch_size).to(device)
 
         image = Image.open(img_path).convert('L')
         return self.predict_single_image(image, decoder_type, verbose)
 
-    def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose = True, extended_info=True):
+    def predict_single_image(self, image, decoder_type: DecoderType = DecoderType.greedy_decoder, verbose=True,
+                             extended_info=True):
         import torchvision.transforms as transforms
         self.toTensor = transforms.ToTensor()
 
@@ -206,15 +206,16 @@ if __name__ == "__main__":
     dc = DictionaryCorrector()
     dc.load_dict("../data/default_dictionary.json", "../data/bigram_default_dictionary.txt")
     chr = CharReplacementEngine()
-    #for image in glob.glob("/tmp/images/*png"):
+    # for image in glob.glob("/tmp/images/*png"):
     for image in glob.glob("/home/alexanderh/Downloads/lyrics/errors/*png"):
 
         for model in models:
-            for i in [DecoderType.greedy_decoder, DecoderType.beam_search_decoder, DecoderType.word_beam_search_decoder]:
+            for i in [DecoderType.greedy_decoder, DecoderType.beam_search_decoder,
+                      DecoderType.word_beam_search_decoder]:
                 print(image)
                 print(model.ident_suffix)
                 pred = model.predict(image, DecoderType(i))
-                type = "_"+ i +"_"
+                type = "_" + i + "_"
                 with open(image.replace(".png", "_unprocessed_" + type + model.ident_suffix + ".txt"), "w") as file:
                     file.write(pred.decoded_string)
                 pred = chr.replace(pred.decoded_string)

@@ -37,7 +37,7 @@ class VGG_FeatureExtractor(nn.Module):
             nn.Conv2d(input_channel, self.output_channel[0], 3, 1, 1), nn.ReLU(True),
             nn.MaxPool2d(2, 2),  # 64x16x50
             nn.Conv2d(self.output_channel[0], self.output_channel[1], 3, 1, 1), nn.ReLU(True),
-            nn.MaxPool2d(2, 2),  # 128x8x25
+            nn.MaxPool2d((2, 1), (2, 1)),  # 128x8x25
             nn.Conv2d(self.output_channel[1], self.output_channel[2], 3, 1, 1), nn.ReLU(True),  # 256x8x25
             nn.Conv2d(self.output_channel[2], self.output_channel[2], 3, 1, 1), nn.ReLU(True),
             nn.MaxPool2d((2, 1), (2, 1)),  # 256x4x25

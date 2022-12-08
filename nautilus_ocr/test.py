@@ -11,8 +11,8 @@ import numpy as np
 from nltk.metrics.distance import edit_distance
 
 from nautilus_ocr.utils import CTCLabelConverter, AttnLabelConverter, Averager
-from dataset import hierarchical_dataset, AlignCollate
-from model import Model
+from nautilus_ocr.dataset import hierarchical_dataset, AlignCollate
+from nautilus_ocr.model import Model
 
 def validation(model, criterion, evaluation_loader, converter, opt, device):
     """ validation or evaluation """

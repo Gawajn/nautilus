@@ -41,8 +41,8 @@ def train(opt, show_number=2, amp=False):
     opt.select_data = opt.select_data.split('-')
     opt.batch_ratio = opt.batch_ratio.split('-')
     train_dataset = Batch_Balanced_Dataset(opt)
-
-    log = open(f'./saved_models/{opt.experiment_name}/log_dataset.txt', 'a', encoding="utf8")
+    save_path = f'{opt.model_save_location_dir}/' if opt.model_save_location_dir else f'./saved_models/{opt.experiment_name}/'
+    log = open(f'{save_path}/log_dataset.txt', 'a', encoding="utf8")
     AlignCollate_valid = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD,
                                       contrast_adjust=opt.contrast_adjust)
     valid_dataset, valid_dataset_log = hierarchical_dataset(root=opt.valid_data, opt=opt)
@@ -152,7 +152,7 @@ def train(opt, show_number=2, amp=False):
 
     """ final options """
     # print(opt)
-    with open(f'./saved_models/{opt.experiment_name}/opt.txt', 'a', encoding="utf8") as opt_file:
+    with open(f'{save_path}opt.txt', 'a', encoding="utf8") as opt_file:
         opt_log = '------------ Options -------------\n'
         args = vars(opt)
         for k, v in args.items():
@@ -232,7 +232,7 @@ def train(opt, show_number=2, amp=False):
             t1 = time.time()
             elapsed_time = time.time() - start_time
             # for log
-            with open(f'./saved_models/{opt.experiment_name}/log_train.txt', 'a', encoding="utf8") as log:
+            with open(f'{save_path}log_train.txt', 'a', encoding="utf8") as log:
                 model.eval()
                 with torch.no_grad():
                     valid_loss, current_accuracy, current_norm_ED, preds, confidence_score, labels, \
@@ -244,18 +244,19 @@ def train(opt, show_number=2, amp=False):
                 loss_avg.reset()
 
                 current_model_log = f'{"Current_accuracy":17s}: {current_accuracy:0.3f}, {"Current_norm_ED":17s}: {current_norm_ED:0.4f}'
-
+                #opt.model_save_location_dir
                 # keep best accuracy model (on valid dataset)
                 if current_accuracy > best_accuracy:
                     best_accuracy = current_accuracy
-                    torch.save(model.state_dict(), f'./saved_models/{opt.experiment_name}/best_accuracy.pth')
+                    model_path = f'{save_path}best_accuracy.pth'
+                    torch.save(model.state_dict(), model_path)
                 if current_norm_ED > best_norm_ED:
                     best_norm_ED = current_norm_ED
-                    torch.save(model.state_dict(), f'./saved_models/{opt.experiment_name}/best_norm_ED.pth')
+                    model_path = f'{save_path}best_norm_ED.pth'
+                    torch.save(model.state_dict(), model_path)
                 best_model_log = f'{"Best_accuracy":17s}: {best_accuracy:0.3f}, {"Best_norm_ED":17s}: {best_norm_ED:0.4f}'
 
                 loss_model_log = f'{loss_log}\n{current_model_log}\n{best_model_log}'
-                print(loss_model_log)
                 log.write(loss_model_log + '\n')
 
                 # show some predicted results
@@ -279,11 +280,12 @@ def train(opt, show_number=2, amp=False):
                 print('validation time: ', time.time() - t1)
                 t1 = time.time()
         # save model per 1e+4 iter.
-        if (i + 1) % 1e+4 == 0:
-            torch.save(
-                model.state_dict(), f'./saved_models/{opt.experiment_name}/iter_{i + 1}.pth')
+        #if (i + 1) % 1e+4 == 0:
+        #    torch.save(
+        #        model.state_dict(), f'./saved_models/{opt.experiment_name}/iter_{i + 1}.pth')
 
         if i == opt.num_iter:
             print('end the training')
-            sys.exit()
+            return
+            #sys.exit()
         i += 1

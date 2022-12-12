@@ -1,7 +1,7 @@
 import glob
 import os
 from abc import abstractmethod, ABC
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from dataclasses import dataclass
 from itertools import groupby
 from typing import Any, List
@@ -60,7 +60,16 @@ class Network:
             model = torch.nn.DataParallel(model).to(self.device)
             model.load_state_dict(pretrained_dict)
         else:
-            model.module.load_state_dict(pretrained_dict)
+            def remove_data_parallel(old_state_dict):
+                new_state_dict = OrderedDict()
+
+                for k, v in old_state_dict.items():
+                    print(k)
+                    name = k[7:]  # remove `module.`
+                    new_state_dict[name] = v
+
+                return new_state_dict
+            model.load_state_dict(remove_data_parallel(pretrained_dict))
         self.model = model.to(self.device)
         self.batch_max_length = opt.batch_max_length
         self.model.eval()

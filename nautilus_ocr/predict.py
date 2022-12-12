@@ -20,7 +20,6 @@ from nautilus_ocr.word_dictionary import CharReplacementEngine, DictionaryCorrec
 from nautilus_ocr.utils import CTCLabelConverter, AttnLabelConverter, Averager, AttrDict
 from nautilus_ocr.model import Model
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def count_parameters(model):
@@ -37,7 +36,9 @@ def count_parameters(model):
 
 
 class Network:
-    def __init__(self, opt, model_path, chars, corpus=''):
+    def __init__(self, opt, model_path, chars, corpus='', device=None):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if device is None else device
+
         """ model configuration """
         opt.select_data = opt.select_data.split('-')
         opt.batch_ratio = opt.batch_ratio.split('-')
@@ -53,10 +54,10 @@ class Network:
         print('model input parameters', opt.imgH, opt.imgW, opt.num_fiducial, opt.input_channel, opt.output_channel,
               opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
               opt.SequenceModeling, opt.Prediction)
-        model = torch.nn.DataParallel(model).to(device)
-        pretrained_dict = torch.load(model_path, map_location=device)
+        model = torch.nn.DataParallel(model).to(self.device)
+        pretrained_dict = torch.load(model_path, map_location=self.device)
         model.load_state_dict(pretrained_dict)
-        self.model = model.to(device)
+        self.model = model.to(self.device)
         self.batch_max_length = opt.batch_max_length
         self.model.eval()
         self.chars = chars

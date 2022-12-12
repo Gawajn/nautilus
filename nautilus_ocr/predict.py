@@ -54,10 +54,13 @@ class Network:
         print('model input parameters', opt.imgH, opt.imgW, opt.num_fiducial, opt.input_channel, opt.output_channel,
               opt.hidden_size, opt.num_class, opt.batch_max_length, opt.Transformation, opt.FeatureExtraction,
               opt.SequenceModeling, opt.Prediction)
+        pretrained_dict = torch.load(model_path, map_location=self.device)
+
         if parallel:
             model = torch.nn.DataParallel(model).to(self.device)
-        pretrained_dict = torch.load(model_path, map_location=self.device)
-        model.load_state_dict(pretrained_dict)
+            model.load_state_dict(pretrained_dict)
+        else:
+            model.module.load_state_dict(pretrained_dict)
         self.model = model.to(self.device)
         self.batch_max_length = opt.batch_max_length
         self.model.eval()

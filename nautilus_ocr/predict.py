@@ -84,7 +84,7 @@ class Network:
         img.sub_(0.5).div_(0.5)
         img = img.unsqueeze(0)
         batch_size = img.size(0)
-        text_for_pred = torch.LongTensor(batch_size, self.batch_max_length + 1).fill_(0).to(device)
+        text_for_pred = torch.LongTensor(batch_size, self.batch_max_length + 1).fill_(0).to(self.device)
         output = self.model(img, text_for_pred)
         output = torch.softmax(output, dim=-1)
         output = output.permute(1, 0, 2)
